@@ -1,0 +1,15 @@
+# Secrets / môi trường
+.env
+.dev.vars
+
+# Runtime
+storage/logs/*.log
+storage/install.lock
+upload/
+node_modules/
+.pm2/
+.wrangler/
+*.log
+*.bak
+*.tar.gz
+*.zip

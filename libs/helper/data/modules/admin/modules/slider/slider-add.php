@@ -1,0 +1,40 @@
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        msg_redirect('admin/modules/slider-list', 'error', 'CSRF token không hợp lệ.');
+    }
+
+    check_demo_mode();
+
+    $sort_order     = (int)($_POST['sort_order'] ?? 0);
+    $slider_name    = anti_xss($_POST['slider_name'] ?? '');
+    $slider_text    = $_POST['slider_text'] ?? '';
+    $slider_url     = anti_xss($_POST['slider_url'] ?? '');
+    $slider_btn_text= anti_xss($_POST['slider_btn_text'] ?? '');
+    $slider_btn_url = anti_xss($_POST['slider_btn_url'] ?? '');
+    $status         = (int)($_POST['status'] ?? 1);
+
+    $slider_image   = upload_file('slider_image', 'slider');
+
+    if (empty($slider_name)) {
+        msg_redirect('reload', 'error', 'Tên slider không được để trống.');
+    }
+
+    $insert = $db->insert('sliders', [
+        'slider_name'    => $slider_name,
+        'slider_image'   => $slider_image,
+        'slider_text'    => $slider_text,
+        'slider_url'     => $slider_url,
+        'slider_btn_text'=> $slider_btn_text,
+        'slider_btn_url' => $slider_btn_url,
+        'sort_order'     => $sort_order,
+        'status'         => $status,
+        'created_at'     => gettime()
+    ]);
+
+    if ($insert) {
+        msg_redirect('reload', 'success', 'Thêm slider thành công.');
+    } else {
+        msg_redirect('reload', 'error', 'Thêm slider thất bại.');
+    }
+}
